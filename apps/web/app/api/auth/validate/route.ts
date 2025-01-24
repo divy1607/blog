@@ -10,7 +10,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Missing username or password" }, { status: 400 });
     }
 
-    // Check if user exists
     const user = await prisma.user.findUnique({
       where: { username },
     });
@@ -19,14 +18,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // Validate password using bcrypt
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return NextResponse.json({ message: "Invalid password" }, { status: 401 });
     }
 
-    // Remove sensitive data before returning the user object
     const { password: _, ...userWithoutPassword } = user;
 
     return NextResponse.json(userWithoutPassword, { status: 200 });
