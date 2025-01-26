@@ -23,7 +23,7 @@ export default async function DashboardPage() {
       </h1>
 
       <div>
-        <h2>{session.user.username}&aposs comments: </h2>
+        <h2>{session.user.username}&apos;s comments: </h2>
         <ul>
           {comments.length > 0 ? (comments.map((comment) =>
             <li key={comment.id}>

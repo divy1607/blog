@@ -50,9 +50,25 @@ export async function PATCH(req: NextRequest) {
     try {
         const { id, title, description, content, tag } = await req.json();
 
+        console.log("Received payload:", { id, title, description, content, tag });
+
         if (!id || (!title && !description && !content && !tag)) {
             return NextResponse.json(
                 { message: "Blog ID and at least one field to update are required." },
+                { status: 400 }
+            );
+        }
+
+        if (typeof id !== "number") {
+            return NextResponse.json(
+                { message: "Blog ID must be a valid number." },
+                { status: 400 }
+            );
+        }
+
+        if (tag && !Array.isArray(tag)) {
+            return NextResponse.json(
+                { message: "`tag` must be an array." },
                 { status: 400 }
             );
         }
@@ -78,7 +94,7 @@ export async function PATCH(req: NextRequest) {
                 ...(title && { title }),
                 ...(description && { description }),
                 ...(content && { content }),
-                ...(tag && { tag }),
+                ...(tag && { tag: { set: tag } }),
             },
         });
 
@@ -87,14 +103,13 @@ export async function PATCH(req: NextRequest) {
             { status: 200 }
         );
     } catch (error: any) {
-        console.error("Error updating blog:", error.message);
+        console.error("Error updating blog:", error);
 
         return NextResponse.json(
             { message: "Internal server error.", error: error.message },
             { status: 500 }
         );
     }
-
 }
 
 export async function DELETE(req: NextRequest) {
