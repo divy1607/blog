@@ -1,14 +1,23 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import LogoutButton from "./LogoutButton";
+import LogoutButton from "../components/LogoutButton";
 import { prisma } from "@repo/db"
+import DashboardPage from "../components/DashboardPage";
 
-export default async function DashboardPage() {
+async function fetchComments(id: number) {
+  const comments = await prisma.comment.findMany({
+    where: { userId: id }
+  })
+  return comments;
+}
+
+export default async function Page() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    redirect("/signin");
+    redirect("/api/auth/signin");
+    return null;
   }
 
   const id = Number(session.user.id);
@@ -35,16 +44,8 @@ export default async function DashboardPage() {
         </ul>
       </div>
 
+      <DashboardPage />
       <LogoutButton />
     </div>
   );
-}
-
-async function fetchComments(id: number) {
-  const comments = await prisma.comment.findMany({
-    where: { userId: id }
-  })
-
-  return comments;
-
 }

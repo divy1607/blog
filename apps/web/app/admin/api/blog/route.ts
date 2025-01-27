@@ -139,3 +139,24 @@ export async function DELETE(req: NextRequest) {
         );
     }
 }
+
+export async function GET(req: NextRequest) {
+    try {
+        const response = await prisma.blog.findMany();
+
+        return (
+            NextResponse.json(
+                { response },
+                { status: 200 }
+            )
+        )
+
+    } catch (error) {
+        return (
+            NextResponse.json(
+                { message: "internal server error: ", error },
+                { status: 500 }
+            )
+        )
+    }
+}
